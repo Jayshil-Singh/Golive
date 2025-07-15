@@ -15,7 +15,26 @@ def dashboard():
     server_status = ServerStatus.query.order_by(ServerStatus.date_ready.desc()).first()
     golive_dates = GoLiveDate.query.order_by(GoLiveDate.date.desc()).all()
     notes = Note.query.order_by(Note.created_at.desc()).all()
-    return render_template('dashboard.html', masterdata=masterdata, server_status=server_status, golive_dates=golive_dates, notes=notes)
+
+    # Progress calculation
+    steps = [
+        {'name': 'Master Data Received', 'done': bool(masterdata)},
+        {'name': 'Server Ready', 'done': bool(server_status)},
+        {'name': 'Go Live Date Set', 'done': bool(golive_dates)},
+    ]
+    progress = int(100 * sum(step['done'] for step in steps) / len(steps))
+
+    # Timeline data
+    timeline = []
+    if masterdata:
+        timeline.append({'label': 'Master Data', 'date': masterdata[0].date_received.strftime('%Y-%m-%d')})
+    if server_status:
+        timeline.append({'label': 'Server Ready', 'date': server_status.date_ready.strftime('%Y-%m-%d')})
+    for d in golive_dates:
+        timeline.append({'label': 'Go Live', 'date': d.date.strftime('%Y-%m-%d')})
+    timeline = sorted(timeline, key=lambda x: x['date'])
+
+    return render_template('dashboard.html', masterdata=masterdata, server_status=server_status, golive_dates=golive_dates, notes=notes, steps=steps, progress=progress, timeline=timeline)
 
 @main.route('/upload', methods=['GET', 'POST'])
 @login_required

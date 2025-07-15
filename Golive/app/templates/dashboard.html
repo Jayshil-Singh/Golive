@@ -3,6 +3,50 @@
 {% block content %}
 <h2>Dashboard</h2>
 <hr>
+<!-- Progress Bar -->
+<h4>Project Progress</h4>
+<div class="mb-3">
+  <div class="progress" style="height: 30px;">
+    <div class="progress-bar bg-success" role="progressbar" style="width: {{ progress }}%;" aria-valuenow="{{ progress }}" aria-valuemin="0" aria-valuemax="100">{{ progress }}%</div>
+  </div>
+  <ul class="mt-2">
+    {% for step in steps %}
+      <li>{% if step.done %}✅{% else %}⬜{% endif %} {{ step.name }}</li>
+    {% endfor %}
+  </ul>
+</div>
+<!-- Timeline Chart -->
+<h4>Timeline</h4>
+<canvas id="timelineChart" height="80"></canvas>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const timelineData = {{ timeline|tojson }};
+  const labels = timelineData.map(e => e.label + ' (' + e.date + ')');
+  const dates = timelineData.map(e => e.date);
+  const ctx = document.getElementById('timelineChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Event Date',
+        data: dates.map((d, i) => i + 1), // Just for visual separation
+        backgroundColor: 'rgba(54, 162, 235, 0.7)',
+      }]
+    },
+    options: {
+      plugins: {
+        legend: { display: false }
+      },
+      scales: {
+        x: { title: { display: true, text: 'Event' } },
+        y: { display: false }
+      }
+    }
+  });
+</script>
+<hr>
+<!-- Existing dashboard content -->
 <h4>Master Data Files</h4>
 <a href="{{ url_for('main.upload_masterdata') }}" class="btn btn-sm btn-success mb-2">Upload New</a>
 <table class="table table-bordered">
