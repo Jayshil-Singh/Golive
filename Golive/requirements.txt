@@ -11,3 +11,4 @@ Werkzeug
 WeasyPrint
 pandas
 openpyxl
+pdfkit

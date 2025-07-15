@@ -7,7 +7,7 @@ import os
 from datetime import datetime
 import pandas as pd
 from io import BytesIO
-from weasyprint import HTML
+import pdfkit
 
 main = Blueprint('main', __name__)
 
@@ -171,7 +171,8 @@ def report_pdf():
     report_date = dt.now().strftime('%Y-%m-%d %H:%M')
     # Render HTML report
     html = render_template('report.html', masterdata=masterdata, server_status=server_status, golive_dates=golive_dates, notes=notes, steps=steps, progress=progress, timeline=timeline, users=users, stats=stats, progress_chart_url=progress_chart_url, timeline_chart_url=timeline_chart_url, report_date=report_date)
-    pdf = HTML(string=html).write_pdf()
+    # PDF generation with pdfkit
+    pdf = pdfkit.from_string(html, False)
     response = make_response(pdf)
     response.headers['Content-Type'] = 'application/pdf'
     response.headers['Content-Disposition'] = 'attachment; filename=golive_report.pdf'
