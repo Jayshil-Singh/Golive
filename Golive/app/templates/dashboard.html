@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h2>Dashboard</h2>
+<hr>
+<h4>Master Data Files</h4>
+<a href="{{ url_for('main.upload_masterdata') }}" class="btn btn-sm btn-success mb-2">Upload New</a>
+<table class="table table-bordered">
+  <thead><tr><th>File Name</th><th>Type</th><th>Date Received</th><th>Uploaded By</th><th>Download</th></tr></thead>
+  <tbody>
+    {% for m in masterdata %}
+    <tr>
+      <td>{{ m.filename }}</td>
+      <td>{{ m.filetype }}</td>
+      <td>{{ m.date_received.strftime('%Y-%m-%d %H:%M') }}</td>
+      <td>{{ m.uploaded_by }}</td>
+      <td><a href="{{ url_for('main.uploaded_file', filename=m.filename) }}">Download</a></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<hr>
+<h4>Server Status</h4>
+<a href="{{ url_for('main.server_status') }}" class="btn btn-sm btn-primary mb-2">Set/Update Server Ready Date</a>
+{% if server_status %}
+  <p>Server Ready Date: <strong>{{ server_status.date_ready.strftime('%Y-%m-%d') }}</strong></p>
+{% else %}
+  <p>No server ready date set.</p>
+{% endif %}
+<hr>
+<h4>Go Live Dates</h4>
+<a href="{{ url_for('main.golive_dates') }}" class="btn btn-sm btn-info mb-2">Manage Go Live Dates</a>
+<ul>
+  {% for d in golive_dates %}
+    <li>{{ d.date.strftime('%Y-%m-%d') }}</li>
+  {% endfor %}
+</ul>
+<hr>
+<h4>Notes</h4>
+<a href="{{ url_for('main.notes') }}" class="btn btn-sm btn-secondary mb-2">View/Add Notes</a>
+<ul>
+  {% for n in notes %}
+    <li>{{ n.text }} <small>({{ n.created_at.strftime('%Y-%m-%d %H:%M') }})</small></li>
+  {% endfor %}
+</ul>
+{% endblock %}

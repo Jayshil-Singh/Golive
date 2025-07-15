@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Go Live Dates{% endblock %}
+{% block content %}
+<h2>Go Live Dates</h2>
+<form method="POST">
+  {{ form.hidden_tag() }}
+  <div class="mb-3">
+    {{ form.date.label(class="form-label") }}
+    {{ form.date(class="form-control") }}
+  </div>
+  <button type="submit" class="btn btn-info">Add Date</button>
+</form>
+<hr>
+<h4>Existing Go Live Dates</h4>
+<ul>
+  {% for d in dates %}
+    <li>{{ d.date.strftime('%Y-%m-%d') }}
+      <form method="POST" action="{{ url_for('main.delete_golive_date', id=d.id) }}" style="display:inline;">
+        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+      </form>
+    </li>
+  {% endfor %}
+</ul>
+{% endblock %}

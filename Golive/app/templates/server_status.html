@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block title %}Server Status{% endblock %}
+{% block content %}
+<h2>Set/Update Server Ready Date</h2>
+<form method="POST">
+  {{ form.hidden_tag() }}
+  <div class="mb-3">
+    {{ form.date_ready.label(class="form-label") }}
+    {{ form.date_ready(class="form-control") }}
+  </div>
+  <button type="submit" class="btn btn-primary">Set Date</button>
+</form>
+{% endblock %}
