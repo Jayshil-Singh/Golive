@@ -2,6 +2,10 @@
 {% block title %}Dashboard{% endblock %}
 {% block content %}
 <h2>Dashboard</h2>
+<div class="mb-3">
+  <a href="{{ url_for('main.report_pdf') }}" class="btn btn-outline-danger">Download PDF Report</a>
+  <a href="{{ url_for('main.report_excel') }}" class="btn btn-outline-success">Download Excel Report</a>
+</div>
 <hr>
 <!-- Progress Bar -->
 <h4>Project Progress</h4>
@@ -15,42 +19,34 @@
     {% endfor %}
   </ul>
 </div>
-<!-- Timeline Chart -->
+<!-- Timeline (vis-timeline) -->
 <h4>Timeline</h4>
-<canvas id="timelineChart" height="80"></canvas>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/vis-timeline@7.7.0/dist/vis-timeline-graph2d.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+<div id="visualization" style="height: 120px;"></div>
+<script src="https://cdn.jsdelivr.net/npm/vis-timeline@7.7.0/dist/vis-timeline-graph2d.min.js"></script>
 <script>
-  const timelineData = {{ timeline|tojson }};
-  const labels = timelineData.map(e => e.label + ' (' + e.date + ')');
-  const dates = timelineData.map(e => e.date);
-  const ctx = document.getElementById('timelineChart').getContext('2d');
-  new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: labels,
-      datasets: [{
-        label: 'Event Date',
-        data: dates.map((d, i) => i + 1), // Just for visual separation
-        backgroundColor: 'rgba(54, 162, 235, 0.7)',
-      }]
-    },
-    options: {
-      plugins: {
-        legend: { display: false }
-      },
-      scales: {
-        x: { title: { display: true, text: 'Event' } },
-        y: { display: false }
-      }
-    }
-  });
+  const items = new vis.DataSet({{ timeline|tojson|safe }});
+  const container = document.getElementById('visualization');
+  const options = {
+    orientation: 'top',
+    showCurrentTime: true,
+    tooltip: { followMouse: true },
+    template: function (item) { return item.content; },
+    margin: { item: 20, axis: 40 },
+    stack: false,
+    selectable: false,
+    zoomable: false,
+    moveable: false
+  };
+  new vis.Timeline(container, items, options);
 </script>
 <hr>
 <!-- Existing dashboard content -->
 <h4>Master Data Files</h4>
 <a href="{{ url_for('main.upload_masterdata') }}" class="btn btn-sm btn-success mb-2">Upload New</a>
 <table class="table table-bordered">
-  <thead><tr><th>File Name</th><th>Type</th><th>Date Received</th><th>Uploaded By</th><th>Download</th></tr></thead>
+  <thead><tr><th>File Name</th><th>Type</th><th>Date Received</th><th>Uploaded By</th><th>Download</th></thead>
   <tbody>
     {% for m in masterdata %}
     <tr>

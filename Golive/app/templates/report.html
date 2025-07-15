@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Go Live Project Report</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        h1, h2, h3 { color: #2c3e50; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        th { background: #f4f4f4; }
+        .progress-bar { background: #27ae60; color: #fff; padding: 5px; border-radius: 4px; }
+        .timeline { margin-bottom: 20px; }
+        .timeline-event { margin-bottom: 8px; }
+        .header { display: flex; align-items: center; margin-bottom: 30px; }
+        .logo { height: 60px; margin-right: 20px; }
+        .report-date { float: right; color: #888; font-size: 0.95em; }
+        .stats { margin-bottom: 20px; }
+        .stats span { display: inline-block; margin-right: 20px; font-weight: bold; }
+        hr { margin: 30px 0; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="https://dummyimage.com/180x60/2980b9/fff.png&text=Go+Live+Logo" class="logo" alt="Logo">
+        <div>
+            <h1>Go Live Project Report</h1>
+            <div class="report-date">Generated: {{ report_date }}</div>
+        </div>
+    </div>
+    <hr>
+    <h2>Summary</h2>
+    <div class="stats">
+        <span>Total Files: {{ stats.total_files }}</span>
+        <span>Go Live Dates: {{ stats.total_golive }}</span>
+        <span>Notes: {{ stats.total_notes }}</span>
+        <span>Server Ready: {{ 'Yes' if stats.server_ready else 'No' }}</span>
+        {% if stats.days_to_golive is not none %}
+        <span>Days to Go Live: {{ stats.days_to_golive }}</span>
+        {% endif %}
+    </div>
+    <img src="{{ progress_chart_url }}" alt="Progress Chart" style="max-width:200px;display:block;margin-bottom:20px;">
+    <img src="{{ timeline_chart_url }}" alt="Timeline Chart" style="max-width:400px;display:block;margin-bottom:20px;">
+    <hr>
+    <h2>Project Progress</h2>
+    <div class="progress-bar" style="width:{{ progress }}%">{{ progress }}%</div>
+    <ul>
+        {% for step in steps %}
+        <li>{% if step.done %}✔{% else %}✗{% endif %} {{ step.name }}</li>
+        {% endfor %}
+    </ul>
+    <h2>Timeline</h2>
+    <div class="timeline">
+        {% for event in timeline %}
+        <div class="timeline-event"><strong>{{ event.label }}</strong>: {{ event.date }}</div>
+        {% endfor %}
+    </div>
+    <h2>Master Data Files</h2>
+    <table>
+        <thead><tr><th>File Name</th><th>Type</th><th>Date Received</th><th>Uploaded By</th></tr></thead>
+        <tbody>
+        {% for m in masterdata %}
+        <tr>
+            <td>{{ m.filename }}</td>
+            <td>{{ m.filetype }}</td>
+            <td>{{ m.date_received.strftime('%Y-%m-%d %H:%M') }}</td>
+            <td>{{ users.get(m.uploaded_by, m.uploaded_by) }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <h2>Server Status</h2>
+    {% if server_status %}
+        <p>Server Ready Date: <strong>{{ server_status.date_ready.strftime('%Y-%m-%d') }}</strong> (by {{ users.get(server_status.set_by, server_status.set_by) }})</p>
+    {% else %}
+        <p>No server ready date set.</p>
+    {% endif %}
+    <h2>Go Live Dates</h2>
+    <ul>
+        {% for d in golive_dates %}
+        <li>{{ d.date.strftime('%Y-%m-%d') }} (by {{ users.get(d.added_by, d.added_by) }})</li>
+        {% endfor %}
+    </ul>
+    <h2>Notes</h2>
+    <ul>
+        {% for n in notes %}
+        <li>{{ n.text }} <small>({{ n.created_at.strftime('%Y-%m-%d %H:%M') }}, by {{ users.get(n.user_id, n.user_id) }})</small></li>
+        {% endfor %}
+    </ul>
+</body>
+</html> 
