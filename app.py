@@ -15,6 +15,12 @@ migrate = Migrate(app, db)
 login_manager = LoginManager(app)
 login_manager.login_view = 'auth.login'
 
+# Add user_loader for Flask-Login
+from app.models import User
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
 try:
     from app.auth import auth as auth_blueprint
     app.register_blueprint(auth_blueprint)
