@@ -1,29 +1,9 @@
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
-from flask_login import LoginManager
-import os
-
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev')
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///golive.db')
-app.config['UPLOAD_FOLDER'] = os.path.join(app.root_path, 'uploads')
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max upload
 
-db = SQLAlchemy(app)
-migrate = Migrate(app, db)
-login_manager = LoginManager(app)
-login_manager.login_view = 'auth.login'
+@app.route("/")
+def hello():
+    return "Hello from minimal Flask!"
 
-# Import and register blueprints
-from app.auth import auth as auth_blueprint
-app.register_blueprint(auth_blueprint)
-
-from app.routes import main as main_blueprint
-app.register_blueprint(main_blueprint)
-
-# Import models to ensure they're registered
-from app import models
-
-if __name__ == '__main__':
-    app.run() 
+if __name__ == "__main__":
+    app.run()
