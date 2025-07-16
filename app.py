@@ -15,8 +15,15 @@ migrate = Migrate(app, db)
 login_manager = LoginManager(app)
 login_manager.login_view = 'auth.login'
 
-# Import routes after app is created
-from app import routes, auth, models
+# Import and register blueprints
+from app.auth import auth as auth_blueprint
+app.register_blueprint(auth_blueprint)
+
+from app.routes import main as main_blueprint
+app.register_blueprint(main_blueprint)
+
+# Import models to ensure they're registered
+from app import models
 
 if __name__ == '__main__':
     app.run() 
